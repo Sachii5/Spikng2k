@@ -18,6 +18,12 @@ switch ($page) {
         $controller->index();
         break;
 
+    case 'rkm':
+        require_once 'controllers/RkmController.php';
+        $controller = new RkmController();
+        $controller->index();
+        break;
+
     case 'dashboard':
     default:
         require_once 'controllers/DashboardController.php';
