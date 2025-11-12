@@ -88,7 +88,7 @@ class DashboardModel
                     WHEN sls.trjd_transactiontype = 'S' THEN
                         CASE
                             WHEN sls.TRJD_FLAGTAX1 = 'Y' AND COALESCE(sls.TRJD_FLAGTAX2, 'z') IN ('Y', 'z')
-                                 AND sls.trjd_create_by NOT IN ('IDM','OMI','BKL')
+                                AND sls.trjd_create_by NOT IN ('IDM','OMI','BKL')
                             THEN sls.TRJD_NOMINALAMT / 11.1 * 10
                             ELSE sls.TRJD_NOMINALAMT
                         END
@@ -411,6 +411,21 @@ class DashboardModel
             ) base
         ) calculated
         ";
+
+        $result = $this->db->query($query);
+        $data = $this->db->fetch($result);
+        $this->db->freeResult($result);
+        return $data;
+    }
+
+    //*total ongkir hari ini */
+    public function getOngkir($date)
+    {
+        $query = "select 
+            sum(pot_ongkir) as pot_ongkir, 
+            (select count(ongkir) from payment_klikigr where ongkir <> 0 and tgl_trans::date = '$date'::date) as pb_ongkir 
+        from payment_klikigr 
+        where tgl_trans::date = '$date'::date";
 
         $result = $this->db->query($query);
         $data = $this->db->fetch($result);

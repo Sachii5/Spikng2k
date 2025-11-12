@@ -1,6 +1,6 @@
 <?php
 require_once 'models/DashboardModel.php';
-require_once 'models/KasirModel.php';
+// require_once 'models/KasirModel.php';
 
 /**
  * Controller untuk halaman Dashboard dan Kasir
@@ -19,7 +19,7 @@ class DashboardController
     public function __construct()
     {
         $this->dashboardModel = new DashboardModel();
-        $this->kasirModel = new KasirModel();
+        // $this->kasirModel = new KasirModel();
         $this->setDates();
     }
 
@@ -155,6 +155,8 @@ class DashboardController
         $ordersYesterdayData = $this->dashboardModel->getOrdersYesterday($this->dates['lastMonthSameDay']);
         $marginTodayData = $this->dashboardModel->getMarginToday($this->dates['today']);
         $marginYesterdayData = $this->dashboardModel->getMarginYesterday($this->dates['lastMonthSameDay']);
+        $potOngkirTodayData = $this->dashboardModel->getOngkir($this->dates['today']);
+        $pbOngkirTodayData = $this->dashboardModel->getOngkir($this->dates['today']);
 
         // Proses data
         $salesToday = $salesTodayData['gross_hari_ini'] ?? 0;
@@ -176,6 +178,8 @@ class DashboardController
         $marginToday = $marginTodayData['margin_hari_ini'] ?? 0;
         $marginYesterday = $marginYesterdayData['margin_kemarin'] ?? 0;
         $marginChange = $this->calculatePercentageChange($marginToday, $marginYesterday);
+        $PotongkirToday = $potOngkirTodayData['pot_ongkir'] ?? 0;
+        $ongkirPBToday = $pbOngkirTodayData['pb_ongkir'] ?? 0;
 
         // Proses data untuk chart
         $currentMonthDays = [];
@@ -225,7 +229,9 @@ class DashboardController
                 'memberAktifChange' => $memberAktifChange,
                 'marginToday' => $this->formatCurrency($marginToday),
                 'marginYesterday' => $this->formatCurrency($marginYesterday),
-                'marginChange' => $marginChange
+                'marginChange' => $marginChange,
+                'ongkirToday' => $this->formatCurrency($PotongkirToday),
+                'ongkirPBToday' => $this->formatCurrency($ongkirPBToday)
             ],
             'chartData' => [
                 'labels' => array_keys($currentMonthDays),
@@ -241,149 +247,149 @@ class DashboardController
     /**
      * Endpoint data dashboard (mis. untuk AJAX) dalam format array/JSON.
      */
-    public function getDashboardData()
-    {
-        // Ambil data dari model
-        $salesTodayData = $this->dashboardModel->getSalesToday($this->dates['today']);
-        // bandingkan dengan tanggal yang sama bulan lalu
-        $salesYesterdayData = $this->dashboardModel->getSalesYesterday($this->dates['lastMonthSameDay']);
-        $memberAktifData = $this->dashboardModel->getMembers($this->dates['today']);
-        $memberAktifLastData = $this->dashboardModel->getMembersYesterday($this->dates['lastMonthSameDay']);
-        $memberRegistrasiCurrentData = $this->dashboardModel->getNewRegistrationsCurrentMonth($this->dates['currentMonthStart'], $this->dates['currentMonthEnd']);
-        $memberRegistrasiLastData = $this->dashboardModel->getNewRegistrationsLastMonth($this->dates['lastMonthStart'], $this->dates['lastMonthEnd']);
-        $dailyOrdersData = $this->dashboardModel->getDailyOrders($this->dates['lastMonthStart'], $this->dates['currentMonthEnd']);
-        $ordersTodayData = $this->dashboardModel->getOrdersToday($this->dates['today']);
-        $ordersYesterdayData = $this->dashboardModel->getOrdersYesterday($this->dates['lastMonthSameDay']);
-        $marginTodayData = $this->dashboardModel->getMarginToday($this->dates['today']);
-        $marginYesterdayData = $this->dashboardModel->getMarginYesterday($this->dates['lastMonthSameDay']);
+    // public function getDashboardData()
+    // {
+    //     // Ambil data dari model
+    //     $salesTodayData = $this->dashboardModel->getSalesToday($this->dates['today']);
+    //     // bandingkan dengan tanggal yang sama bulan lalu
+    //     $salesYesterdayData = $this->dashboardModel->getSalesYesterday($this->dates['lastMonthSameDay']);
+    //     $memberAktifData = $this->dashboardModel->getMembers($this->dates['today']);
+    //     $memberAktifLastData = $this->dashboardModel->getMembersYesterday($this->dates['lastMonthSameDay']);
+    //     $memberRegistrasiCurrentData = $this->dashboardModel->getNewRegistrationsCurrentMonth($this->dates['currentMonthStart'], $this->dates['currentMonthEnd']);
+    //     $memberRegistrasiLastData = $this->dashboardModel->getNewRegistrationsLastMonth($this->dates['lastMonthStart'], $this->dates['lastMonthEnd']);
+    //     $dailyOrdersData = $this->dashboardModel->getDailyOrders($this->dates['lastMonthStart'], $this->dates['currentMonthEnd']);
+    //     $ordersTodayData = $this->dashboardModel->getOrdersToday($this->dates['today']);
+    //     $ordersYesterdayData = $this->dashboardModel->getOrdersYesterday($this->dates['lastMonthSameDay']);
+    //     $marginTodayData = $this->dashboardModel->getMarginToday($this->dates['today']);
+    //     $marginYesterdayData = $this->dashboardModel->getMarginYesterday($this->dates['lastMonthSameDay']);
 
-        // Proses data
-        $salesToday = $salesTodayData['gross_hari_ini'] ?? 0;
-        $salesYesterday = $salesYesterdayData['gross_kemarin'] ?? 0;
-        $salesChange = $this->calculatePercentageChange($salesToday, $salesYesterday);
+    //     // Proses data
+    //     $salesToday = $salesTodayData['gross_hari_ini'] ?? 0;
+    //     $salesYesterday = $salesYesterdayData['gross_kemarin'] ?? 0;
+    //     $salesChange = $this->calculatePercentageChange($salesToday, $salesYesterday);
 
-        $memberAktif = $memberAktifData['member_aktif'] ?? 0;
-        $memberAktifLast = $memberAktifLastData['member_aktif'] ?? 0;
-        $memberAktifChange = $this->calculatePercentageChange($memberAktif, $memberAktifLast);
+    //     $memberAktif = $memberAktifData['member_aktif'] ?? 0;
+    //     $memberAktifLast = $memberAktifLastData['member_aktif'] ?? 0;
+    //     $memberAktifChange = $this->calculatePercentageChange($memberAktif, $memberAktifLast);
 
-        $memberRegistrasiCurrent = $memberRegistrasiCurrentData['jml_mem'] ?? 0;
-        $memberRegistrasiLast = $memberRegistrasiLastData['jml_mem'] ?? 0;
-        $memberRegistrasiChange = $this->calculatePercentageChange($memberRegistrasiCurrent, $memberRegistrasiLast);
+    //     $memberRegistrasiCurrent = $memberRegistrasiCurrentData['jml_mem'] ?? 0;
+    //     $memberRegistrasiLast = $memberRegistrasiLastData['jml_mem'] ?? 0;
+    //     $memberRegistrasiChange = $this->calculatePercentageChange($memberRegistrasiCurrent, $memberRegistrasiLast);
 
-        $ordersToday = $ordersTodayData['total_pb'] ?? 0;
-        $ordersYesterday = $ordersYesterdayData['total_pb'] ?? 0;
-        $ordersChange = $this->calculatePercentageChange($ordersToday, $ordersYesterday);
+    //     $ordersToday = $ordersTodayData['total_pb'] ?? 0;
+    //     $ordersYesterday = $ordersYesterdayData['total_pb'] ?? 0;
+    //     $ordersChange = $this->calculatePercentageChange($ordersToday, $ordersYesterday);
 
-        $marginToday = $marginTodayData['margin_hari_ini'] ?? 0;
-        $marginYesterday = $marginYesterdayData['margin_kemarin'] ?? 0;
-        $marginChange = $this->calculatePercentageChange($marginToday, $marginYesterday);
+    //     $marginToday = $marginTodayData['margin_hari_ini'] ?? 0;
+    //     $marginYesterday = $marginYesterdayData['margin_kemarin'] ?? 0;
+    //     $marginChange = $this->calculatePercentageChange($marginToday, $marginYesterday);
 
-        // Proses data untuk chart
-        $currentMonthDays = [];
-        $lastMonthDays = [];
+    //     // Proses data untuk chart
+    //     $currentMonthDays = [];
+    //     $lastMonthDays = [];
 
-        for ($i = 1; $i <= 31; $i++) {
-            $day = str_pad($i, 2, '0', STR_PAD_LEFT);
-            $currentMonthDays[$day] = 0;
-            $lastMonthDays[$day] = 0;
-        }
+    //     for ($i = 1; $i <= 31; $i++) {
+    //         $day = str_pad($i, 2, '0', STR_PAD_LEFT);
+    //         $currentMonthDays[$day] = 0;
+    //         $lastMonthDays[$day] = 0;
+    //     }
 
-        foreach ($dailyOrdersData as $data) {
-            $day = $data['hari'];
-            $month = $data['bulan'];
-            $year = $data['tahun'];
-            $orders = $data['total_pesanan'];
+    //     foreach ($dailyOrdersData as $data) {
+    //         $day = $data['hari'];
+    //         $month = $data['bulan'];
+    //         $year = $data['tahun'];
+    //         $orders = $data['total_pesanan'];
 
-            $currentYear = date('Y');
-            $currentMonth = date('n');
-            $lastMonth = date('n', strtotime('-1 month'));
+    //         $currentYear = date('Y');
+    //         $currentMonth = date('n');
+    //         $lastMonth = date('n', strtotime('-1 month'));
 
-            if ($month == $currentMonth && $year == $currentYear) {
-                $currentMonthDays[$day] = $orders;
-            } elseif ($month == $lastMonth && $year == date('Y', strtotime('-1 month'))) {
-                $lastMonthDays[$day] = $orders;
-            }
-        }
+    //         if ($month == $currentMonth && $year == $currentYear) {
+    //             $currentMonthDays[$day] = $orders;
+    //         } elseif ($month == $lastMonth && $year == date('Y', strtotime('-1 month'))) {
+    //             $lastMonthDays[$day] = $orders;
+    //         }
+    //     }
 
-        // Return data dalam format array
-        return [
-            'dates' => [
-                'today' => $this->dates['today'],
-                'yesterday' => $this->dates['yesterday'],
-                'currentMonth' => $this->formatMonth(date('Y-m')),
-                'lastMonth' => $this->formatMonth(date('Y-m', strtotime('-1 month')))
-            ],
-            'metrics' => [
-                'salesToday' => $this->formatCurrency($salesToday),
-                'salesYesterday' => $this->formatCurrency($salesYesterday),
-                'salesChange' => $salesChange,
-                'ordersToday' => $ordersToday,
-                'ordersYesterday' => $ordersYesterday,
-                'ordersChange' => $ordersChange,
-                'memberAktif' => $memberAktif,
-                'memberAktifLast' => $memberAktifLast,
-                'memberAktifChange' => $memberAktifChange,
-                'marginToday' => $this->formatCurrency($marginToday),
-                'marginYesterday' => $this->formatCurrency($marginYesterday),
-                'marginChange' => $marginChange
-            ],
-            'chartData' => [
-                'labels' => array_keys($currentMonthDays),
-                'currentMonthValues' => array_values($currentMonthDays),
-                'lastMonthValues' => array_values($lastMonthDays)
-            ]
-        ];
-    }
+    //     // Return data dalam format array
+    //     return [
+    //         'dates' => [
+    //             'today' => $this->dates['today'],
+    //             'yesterday' => $this->dates['yesterday'],
+    //             'currentMonth' => $this->formatMonth(date('Y-m')),
+    //             'lastMonth' => $this->formatMonth(date('Y-m', strtotime('-1 month')))
+    //         ],
+    //         'metrics' => [
+    //             'salesToday' => $this->formatCurrency($salesToday),
+    //             'salesYesterday' => $this->formatCurrency($salesYesterday),
+    //             'salesChange' => $salesChange,
+    //             'ordersToday' => $ordersToday,
+    //             'ordersYesterday' => $ordersYesterday,
+    //             'ordersChange' => $ordersChange,
+    //             'memberAktif' => $memberAktif,
+    //             'memberAktifLast' => $memberAktifLast,
+    //             'memberAktifChange' => $memberAktifChange,
+    //             'marginToday' => $this->formatCurrency($marginToday),
+    //             'marginYesterday' => $this->formatCurrency($marginYesterday),
+    //             'marginChange' => $marginChange
+    //         ],
+    //         'chartData' => [
+    //             'labels' => array_keys($currentMonthDays),
+    //             'currentMonthValues' => array_values($currentMonthDays),
+    //             'lastMonthValues' => array_values($lastMonthDays)
+    //         ]
+    //     ];
+    // }
 
     // Method untuk halaman kasir
-    public function kasir()
-    {
-        // Ambil parameter tanggal dari GET request
-        $startDate = $_GET['start_date'] ?? date('Y-m-d');
-        $endDate = $_GET['end_date'] ?? date('Y-m-d');
+    // public function kasir()
+    // {
+    //     // Ambil parameter tanggal dari GET request
+    //     $startDate = $_GET['start_date'] ?? date('Y-m-d');
+    //     $endDate = $_GET['end_date'] ?? date('Y-m-d');
 
-        // Validasi tanggal
-        if ($startDate > $endDate) {
-            $temp = $startDate;
-            $startDate = $endDate;
-            $endDate = $temp;
-        }
+    //     // Validasi tanggal
+    //     if ($startDate > $endDate) {
+    //         $temp = $startDate;
+    //         $startDate = $endDate;
+    //         $endDate = $temp;
+    //     }
 
-        // Ambil data dari model
-        $orderData = $this->kasirModel->getOrderStatusData($startDate, $endDate);
+    //     // Ambil data dari model
+    //     $orderData = $this->kasirModel->getOrderStatusData($startDate, $endDate);
 
-        // Hitung total pesanan
-        $totalPesanan = 0;
-        foreach ($orderData as $item) {
-            $totalPesanan += (int)$item['jumlah'];
-        }
+    //     // Hitung total pesanan
+    //     $totalPesanan = 0;
+    //     foreach ($orderData as $item) {
+    //         $totalPesanan += (int)$item['jumlah'];
+    //     }
 
-        // Konfigurasi status
-        $statusConfig = [
-            'SELESAI' => ['class' => 'success', 'icon' => 'fa-check-circle', 'color' => '#27ae60'],
-            'SIAP PICKING' => ['class' => 'primary', 'icon' => 'fa-box-open', 'color' => '#3498db'],
-            'SIAP SCANNING' => ['class' => 'warning', 'icon' => 'fa-barcode', 'color' => '#f39c12'],
-            'SIAP DRAFT STRUK' => ['class' => 'secondary', 'icon' => 'fa-file-contract', 'color' => '#34495e'],
-            'PEMBAYARAN' => ['class' => 'info', 'icon' => 'fa-credit-card', 'color' => '#17a2b8'],
-            'SIAP STRUK' => ['class' => 'purple', 'icon' => 'fa-receipt', 'color' => '#9b59b6'],
-            'BATAL' => ['class' => 'danger', 'icon' => 'fa-times-circle', 'color' => '#e74c3c'],
-            'SIAP SEND HANDHELD' => ['class' => 'orange', 'icon' => 'fa-mobile-alt', 'color' => '#f39c12'],
-            'LAINNYA' => ['class' => 'dark', 'icon' => 'fa-question-circle', 'color' => '#2c3e50']
-        ];
+    //     // Konfigurasi status
+    //     $statusConfig = [
+    //         'SELESAI' => ['class' => 'success', 'icon' => 'fa-check-circle', 'color' => '#27ae60'],
+    //         'SIAP PICKING' => ['class' => 'primary', 'icon' => 'fa-box-open', 'color' => '#3498db'],
+    //         'SIAP SCANNING' => ['class' => 'warning', 'icon' => 'fa-barcode', 'color' => '#f39c12'],
+    //         'SIAP DRAFT STRUK' => ['class' => 'secondary', 'icon' => 'fa-file-contract', 'color' => '#34495e'],
+    //         'PEMBAYARAN' => ['class' => 'info', 'icon' => 'fa-credit-card', 'color' => '#17a2b8'],
+    //         'SIAP STRUK' => ['class' => 'purple', 'icon' => 'fa-receipt', 'color' => '#9b59b6'],
+    //         'BATAL' => ['class' => 'danger', 'icon' => 'fa-times-circle', 'color' => '#e74c3c'],
+    //         'SIAP SEND HANDHELD' => ['class' => 'orange', 'icon' => 'fa-mobile-alt', 'color' => '#f39c12'],
+    //         'LAINNYA' => ['class' => 'dark', 'icon' => 'fa-question-circle', 'color' => '#2c3e50']
+    //     ];
 
-        // Siapkan data untuk view - TAMBAHKAN CONTROLLER INSTANCE
-        $data = [
-            'page' => 'kasir',
-            'startDate' => $startDate,
-            'endDate' => $endDate,
-            'orderData' => $orderData,
-            'totalPesanan' => $totalPesanan,
-            'statusConfig' => $statusConfig,
-            'hasData' => count($orderData) > 0,
-            'controller' => $this // PASS CONTROLLER INSTANCE KE VIEW
-        ];
+    //     // Siapkan data untuk view - TAMBAHKAN CONTROLLER INSTANCE
+    //     $data = [
+    //         'page' => 'kasir',
+    //         'startDate' => $startDate,
+    //         'endDate' => $endDate,
+    //         'orderData' => $orderData,
+    //         'totalPesanan' => $totalPesanan,
+    //         'statusConfig' => $statusConfig,
+    //         'hasData' => count($orderData) > 0,
+    //         'controller' => $this // PASS CONTROLLER INSTANCE KE VIEW
+    //     ];
 
-        // Load view kasir
-        require_once 'views/kasir.php';
-    }
+    //     // Load view kasir
+    //     require_once 'views/kasir.php';
+    // }
 }

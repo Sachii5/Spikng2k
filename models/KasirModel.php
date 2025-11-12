@@ -78,8 +78,8 @@ class KasirModel
                 payment_klikigr as k ON h.obi_kdmember = k.kode_member
             WHERE h.obi_tglorder::date BETWEEN $1 AND $2
         ) as main
-        GROUP BY nama_produk, plu
-        ORDER BY order DESC, real DESC;
+        GROUP BY nama_produk, plu, qty_order, qty_real
+        ORDER BY qty_order DESC, qty_real DESC;
         ";
 
         $result = $this->db->query($query, [$startDate, $endDate]);
@@ -106,10 +106,7 @@ class KasirModel
         LEFT JOIN tbmaster_customer c ON h.obi_kdmember = c.cus_kodemember
         WHERE h.obi_tglpb IS NOT NULL
         AND h.obi_tglpb::date BETWEEN $1 AND $2
-        AND (
-            COALESCE(h.obi_kdekspedisi, '') LIKE '%Ambil%'
-            OR COALESCE(LOWER(c.cus_kodeigr), '') = '2k'
-        )
+        AND h.obi_kdekspedisi like 'Ambil%'
         ORDER BY h.obi_tglpb DESC
         ";
 

@@ -43,7 +43,7 @@ try {
 
     error_log('VIEW AMT direct query: ' . preg_replace('/\s+/', ' ', trim($sql)));
 
-    $res = $db->query($sql); // coba eksekusi raw SQL di view
+    $res = $db->query($sql);
     if ($res) {
         $amt = $db->fetchAll($res);
         if (method_exists($db, 'freeResult')) {
@@ -76,7 +76,6 @@ $amt = $data['amt'] ?? [];
     body {
         font-family: 'Inter', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         min-height: 100vh;
-        /* padding: 20px 0; */
     }
 
     .dashboard-container {
@@ -297,6 +296,9 @@ $amt = $data['amt'] ?? [];
         text-transform: uppercase;
         letter-spacing: 0.5px;
         font-size: 0.85rem;
+        position: sticky;
+        top: 0;
+        z-index: 10;
     }
 
     .table-modern tbody td {
@@ -339,6 +341,79 @@ $amt = $data['amt'] ?? [];
         padding-bottom: 10px;
         border-bottom: 3px solid var(--accent);
         display: inline-block;
+    }
+
+    /* Pagination Scroll Styles */
+    .table-scroll-container {
+        max-height: 600px;
+        overflow-y: auto;
+        position: relative;
+        border-radius: 16px;
+        box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+    }
+
+    .table-scroll-container::-webkit-scrollbar {
+        width: 12px;
+    }
+
+    .table-scroll-container::-webkit-scrollbar-track {
+        background: rgba(0, 0, 0, 0.05);
+        border-radius: 10px;
+    }
+
+    .table-scroll-container::-webkit-scrollbar-thumb {
+        background: linear-gradient(135deg, var(--accent), #2980b9);
+        border-radius: 10px;
+        border: 2px solid rgba(255, 255, 255, 0.3);
+    }
+
+    .table-scroll-container::-webkit-scrollbar-thumb:hover {
+        background: linear-gradient(135deg, #2980b9, var(--accent));
+    }
+
+    .pagination-info {
+        background: rgba(52, 152, 219, 0.1);
+        padding: 12px 20px;
+        border-radius: 12px;
+        margin-top: 15px;
+        text-align: center;
+        font-weight: 600;
+        color: var(--accent);
+    }
+
+    .scroll-indicator {
+        position: absolute;
+        bottom: 20px;
+        left: 50%;
+        transform: translateX(-50%);
+        background: rgba(52, 152, 219, 0.9);
+        color: white;
+        padding: 8px 20px;
+        border-radius: 20px;
+        font-size: 0.85rem;
+        font-weight: 600;
+        animation: bounce 2s infinite;
+        pointer-events: none;
+        z-index: 5;
+    }
+
+    @keyframes bounce {
+
+        0%,
+        20%,
+        50%,
+        80%,
+        100% {
+            transform: translateX(-50%) translateY(0);
+        }
+
+        40% {
+            transform: translateX(-50%) translateY(-10px);
+        }
+
+        60% {
+            transform: translateX(-50%) translateY(-5px);
+        }
     }
 </style>
 
@@ -405,48 +480,6 @@ $amt = $data['amt'] ?? [];
                 </div>
             </div>
 
-            <!-- AMT Section -->
-            <div class="amt-section mt-4">
-                <h3 class="section-title">
-                    <i class="fas fa-user-friends me-2"></i>Data AMBT - Ambil di Stock Point Indogrosir
-                </h3>
-
-                <?php
-                // debug: catat apakah $amt ada dan preview (gunakan $amt, bukan $data['amt'])
-                error_log('VIEW AMT isset: ' . (empty($amt) ? 'no' : 'yes') . ' | count: ' . count($amt));
-                ?>
-                <?php if (!empty($amt)): ?>
-                    <div class="table-responsive">
-                        <table class="table table-modern table-striped">
-                            <thead>
-                                <tr>
-                                    <th>#</th>
-                                    <th>Nomor Transaksi</th>
-                                    <th>No PB</th>
-                                    <th>Kode Member</th>
-                                    <th>Nama Member</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <?php foreach ($amt as $idx => $amtRow): ?>
-                                    <tr>
-                                        <td><?php echo $idx + 1; ?></td>
-                                        <td><?php echo htmlspecialchars($amtRow['nomor']); ?></td>
-                                        <td><?php echo htmlspecialchars($amtRow['notrx']); ?></td>
-                                        <td><?php echo htmlspecialchars($amtRow['kdmember']); ?></td>
-                                        <td><?php echo htmlspecialchars($amtRow['namamember']); ?></td>
-                                    </tr>
-                                <?php endforeach; ?>
-                            </tbody>
-                        </table>
-                    </div>
-                <?php else: ?>
-                    <div class="alert alert-info mt-2">
-                        Tidak ada data AMBT untuk periode terpilih.
-                        </div>
-                <?php endif; ?>
-            </div>
-
             <!-- Data Cards -->
             <div class="row">
                 <?php foreach ($data['orderData'] as $item):
@@ -472,6 +505,54 @@ $amt = $data['amt'] ?? [];
                 <?php endforeach; ?>
             </div>
 
+            <!-- AMT Section -->
+            <div class="amt-section mt-5">
+                <h3 class="section-title">
+                    <i class="fas fa-user-friends me-2"></i>Data AMBT - Ambil di Stock Point Indogrosir
+                </h3>
+
+                <?php
+                error_log('VIEW AMT isset: ' . (empty($amt) ? 'no' : 'yes') . ' | count: ' . count($amt));
+                ?>
+                <?php if (!empty($amt)): ?>
+                    <div class="table-scroll-container" id="ambtTableContainer">
+                        <table class="table table-modern table-striped mb-0">
+                            <thead>
+                                <tr>
+                                    <th>#</th>
+                                    <th>Nomor Transaksi</th>
+                                    <th>No PB</th>
+                                    <th>Kode Member</th>
+                                    <th>Nama Member</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <?php foreach ($amt as $idx => $amtRow): ?>
+                                    <tr>
+                                        <td><?php echo $idx + 1; ?></td>
+                                        <td><?php echo htmlspecialchars($amtRow['nomor']); ?></td>
+                                        <td><?php echo htmlspecialchars($amtRow['notrx']); ?></td>
+                                        <td><?php echo htmlspecialchars($amtRow['kdmember']); ?></td>
+                                        <td><?php echo htmlspecialchars($amtRow['namamember']); ?></td>
+                                    </tr>
+                                <?php endforeach; ?>
+                            </tbody>
+                        </table>
+                        <!-- <div class="scroll-indicator" id="ambtScrollIndicator">
+                            <i class="fas fa-arrow-down me-2"></i>Scroll untuk melihat lebih banyak
+                        </div> -->
+                    </div>
+                    <div class="pagination-info">
+                        <i class="fas fa-database me-2"></i>
+                        Menampilkan <?php echo count($amt); ?> data AMBT
+                    </div>
+                <?php else: ?>
+                    <div class="alert alert-info mt-2">
+                        Tidak ada data AMBT untuk periode terpilih.
+                    </div>
+                <?php endif; ?>
+            </div>
+
             <!-- Items Table Section -->
             <?php
             $hasData = !empty($data['hasData']);
@@ -480,14 +561,14 @@ $amt = $data['amt'] ?? [];
             ?>
 
             <?php if ($hasData && $hasItemsData && !empty($orderItems)): ?>
-                <div class="row mt-4">
+                <div class="row mt-5">
                     <div class="col-12">
                         <h3 class="section-title">
                             <i class="fas fa-list-alt me-2"></i>Detail Item Pesanan
                         </h3>
 
-                        <div class="table-responsive">
-                            <table class="table table-modern">
+                        <div class="table-scroll-container" id="itemsTableContainer">
+                            <table class="table table-modern mb-0">
                                 <thead>
                                     <tr>
                                         <th>#</th>
@@ -523,16 +604,24 @@ $amt = $data['amt'] ?? [];
                                         </tr>
                                     <?php endforeach; ?>
                                 </tbody>
+                            </table>
+                            <!-- <div class="scroll-indicator" id="itemsScrollIndicator">
+                                <i class="fas fa-arrow-down me-2"></i>Scroll untuk melihat lebih banyak
+                            </div> -->
+                        </div>
+
+                        <div class="table-modern mt-3">
+                            <table class="table mb-0">
                                 <tfoot>
                                     <tr class="fw-bold" style="background: rgba(0,0,0,0.02);">
-                                        <td colspan="3" class="text-end">TOTAL:</td>
-                                        <td class="text-center">
+                                        <td colspan="3" class="text-end" style="padding: 15px 20px;">TOTAL:</td>
+                                        <td class="text-center" style="padding: 15px 20px;">
                                             <span class="badge-qty"><?php echo $controller->formatNumber($data['totalItemOrder'] ?? 0); ?></span>
                                         </td>
-                                        <td class="text-center">
+                                        <td class="text-center" style="padding: 15px 20px;">
                                             <span class="badge-real"><?php echo $controller->formatNumber($data['totalItemReal'] ?? 0); ?></span>
                                         </td>
-                                        <td class="text-center">
+                                        <td class="text-center" style="padding: 15px 20px;">
                                             <?php
                                             $totalOrder = $data['totalItemOrder'] ?? 0;
                                             $totalReal = $data['totalItemReal'] ?? 0;
@@ -546,6 +635,11 @@ $amt = $data['amt'] ?? [];
                                     </tr>
                                 </tfoot>
                             </table>
+                        </div>
+
+                        <div class="pagination-info">
+                            <i class="fas fa-box-open me-2"></i>
+                            Menampilkan <?php echo count($orderItems); ?> item pesanan
                         </div>
                     </div>
                 </div>
@@ -576,7 +670,6 @@ $amt = $data['amt'] ?? [];
         <?php endif; ?>
     </div>
 </div>
-</div>
 
 <script>
     // Update current date
@@ -586,4 +679,56 @@ $amt = $data['amt'] ?? [];
         month: 'long',
         day: 'numeric'
     });
+
+    // Scroll indicator handler for AMBT table
+    const ambtContainer = document.getElementById('ambtTableContainer');
+    const ambtIndicator = document.getElementById('ambtScrollIndicator');
+
+    if (ambtContainer && ambtIndicator) {
+        // Check if content is scrollable
+        if (ambtContainer.scrollHeight <= ambtContainer.clientHeight) {
+            ambtIndicator.style.display = 'none';
+        }
+
+        ambtContainer.addEventListener('scroll', function() {
+            const scrollPercentage = (this.scrollTop / (this.scrollHeight - this.clientHeight)) * 100;
+
+            if (scrollPercentage > 10) {
+                ambtIndicator.style.opacity = '0';
+                ambtIndicator.style.pointerEvents = 'none';
+            } else {
+                ambtIndicator.style.opacity = '1';
+            }
+
+            if (scrollPercentage > 95) {
+                ambtIndicator.style.display = 'none';
+            }
+        });
+    }
+
+    // Scroll indicator handler for Items table
+    const itemsContainer = document.getElementById('itemsTableContainer');
+    const itemsIndicator = document.getElementById('itemsScrollIndicator');
+
+    if (itemsContainer && itemsIndicator) {
+        // Check if content is scrollable
+        if (itemsContainer.scrollHeight <= itemsContainer.clientHeight) {
+            itemsIndicator.style.display = 'none';
+        }
+
+        itemsContainer.addEventListener('scroll', function() {
+            const scrollPercentage = (this.scrollTop / (this.scrollHeight - this.clientHeight)) * 100;
+
+            if (scrollPercentage > 10) {
+                itemsIndicator.style.opacity = '0';
+                itemsIndicator.style.pointerEvents = 'none';
+            } else {
+                itemsIndicator.style.opacity = '1';
+            }
+
+            if (scrollPercentage > 95) {
+                itemsIndicator.style.display = 'none';
+            }
+        });
+    }
 </script>

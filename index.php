@@ -7,9 +7,9 @@ $page = $_GET['page'] ?? 'dashboard';
 
 switch ($page) {
     case 'kasir':
-        require_once 'controllers/DashboardController.php';
-        $controller = new DashboardController();
-        $controller->kasir();
+        require_once 'controllers/kasirController.php';
+        $controller = new KasirController();
+        $controller->index();
         break;
 
     case 'customer':
