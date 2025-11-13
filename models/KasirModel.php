@@ -59,27 +59,22 @@ class KasirModel
     public function getOrderItemsData($startDate, $endDate)
     {
         $query = "
-        SELECT nama_produk, plu, SUM(qty_real) as real, SUM(qty_order) as order
-        FROM (
-            SELECT 
-                p.prd_deskripsipendek as nama_produk,
-                d.obi_prdcd as plu,
-                d.obi_qtyrealisasi as qty_real,
-                d.obi_qtyorder as qty_order
-            FROM 
-                tbtr_obi_h as h
+        SELECT 
+            p.prd_deskripsipendek as nama_produk,
+            obi_prdcd as plu,
+            sum(d.obi_qtyrealisasi) as real,
+            sum(d.obi_qtyorder) as order
+        FROM 
+            tbtr_obi_d d
             LEFT JOIN
-                tbmaster_customer as c ON h.obi_kdmember = c.cus_kodemember 
-            LEFT JOIN
-                tbtr_obi_d as d ON h.obi_notrans = d.obi_notrans AND d.obi_tgltrans = h.obi_tgltrans  
+                tbtr_obi_h as h ON h.obi_notrans = d.obi_notrans AND d.obi_tgltrans = h.obi_tgltrans  
             LEFT JOIN
                 tbmaster_prodmast as p ON d.obi_prdcd = p.prd_prdcd
             LEFT JOIN 
                 payment_klikigr as k ON h.obi_kdmember = k.kode_member
             WHERE h.obi_tglorder::date BETWEEN $1 AND $2
-        ) as main
-        GROUP BY nama_produk, plu, qty_order, qty_real
-        ORDER BY qty_order DESC, qty_real DESC;
+        GROUP BY prd_deskripsipendek, obi_prdcd
+        ORDER BY nama_produk
         ";
 
         $result = $this->db->query($query, [$startDate, $endDate]);
@@ -101,16 +96,70 @@ class KasirModel
             c.cus_namamember as namamember,
             h.obi_kdekspedisi,
             c.cus_kodeigr,
-            h.obi_tglpb
+            h.obi_tglpb,
+            h.obi_tgltrans
         FROM tbtr_obi_h h
         LEFT JOIN tbmaster_customer c ON h.obi_kdmember = c.cus_kodemember
         WHERE h.obi_tglpb IS NOT NULL
         AND h.obi_tglpb::date BETWEEN $1 AND $2
         AND h.obi_kdekspedisi like 'Ambil%'
-        ORDER BY h.obi_tglpb DESC
+        ORDER BY h.obi_notrans
         ";
 
         $result = $this->db->query($query, [$startDate, $endDate]);
+        if ($result) {
+            $data = $this->db->fetchAll($result);
+            $this->db->freeResult($result);
+            return $data;
+        }
+        return [];
+    }
+
+    public function getPBData($startDate, $endDate)
+    {
+        $query = "
+        SELECT 
+            obi_nopb as nopb, 
+            obi_tglpb as tgl, 
+            obi_notrans as notrans,
+            obi_kdmember as kode_member,
+            obi_ekspedisi as ongkir,
+            obi_tgltrans as tgltrans
+        FROM TBTR_OBI_H
+        WHERE obi_tglpb::date BETWEEN $1 AND $2
+        ORDER BY obi_notrans
+        ";
+
+        $result = $this->db->query($query, [$startDate, $endDate]);
+        if ($result) {
+            $data = $this->db->fetchAll($result);
+            $this->db->freeResult($result);
+            return $data;
+        }
+        return [];
+    }
+
+    public function getDetailByNoTrans($noTrans, $tglTrans)
+    {
+        $query = "
+        SELECT 
+            d.obi_notrans as nomor,
+            h.obi_nopb as nopb,
+            h.obi_tglpb as tgl,
+            h.obi_kdmember as kode_member,
+            cus_namamember as nama_member,
+            prd_prdcd as plu,
+            prd_deskripsipanjang as nama,
+            d.obi_qtyorder as qty_order
+        FROM tbtr_obi_d d
+        LEFT JOIN tbtr_obi_h h ON h.obi_notrans = d.obi_notrans AND h.obi_tgltrans = d.obi_tgltrans
+        LEFT JOIN tbmaster_customer ON cus_kodemember = h.obi_kdmember
+        LEFT JOIN tbmaster_prodmast ON prd_prdcd = d.obi_prdcd
+        WHERE d.obi_notrans = $1 AND d.obi_tgltrans::date = $2
+        ORDER BY d.obi_prdcd
+        ";
+
+        $result = $this->db->query($query, [$noTrans, $tglTrans]);
         if ($result) {
             $data = $this->db->fetchAll($result);
             $this->db->freeResult($result);

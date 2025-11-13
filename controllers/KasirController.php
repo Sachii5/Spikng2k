@@ -27,10 +27,11 @@ class KasirController
         $orderData = $this->model->getOrderStatusData($startDate, $endDate);
         $orderItems = $this->model->getOrderItemsData($startDate, $endDate);
         $amt = $this->model->getAMT($startDate, $endDate);
+        $pbData = $this->model->getPBData($startDate, $endDate);
 
         // debug: tulis jumlah baris AMT ke log server
-        error_log('AMT rows: ' . count($amt) . ' | dates: ' . $startDate . ' - ' . $endDate);
-        error_log('AMT preview: ' . print_r(array_slice($amt, 0, 20), true));
+        error_log('Controller AMT rows: ' . count($amt));
+        error_log('Controller PB rows: ' . count($pbData));
 
         // Hitung total pesanan
         $totalPesanan = 0;
@@ -42,8 +43,8 @@ class KasirController
         $totalItemOrder = 0;
         $totalItemReal = 0;
         foreach ($orderItems as $item) {
-            $totalItemOrder += (int)$item['order'];
-            $totalItemReal += (int)$item['real'];
+            $totalItemOrder += (int)($item['order'] ?? 0);
+            $totalItemReal += (int)($item['real'] ?? 0);
         }
 
         // Konfigurasi status
@@ -66,28 +67,82 @@ class KasirController
             'orderData' => $orderData,
             'orderItems' => $orderItems,
             'totalPesanan' => $totalPesanan,
-            'totalItemOrder' => $totalItemOrder, 
+            'totalItemOrder' => $totalItemOrder,
             'totalItemReal' => $totalItemReal,
             'statusConfig' => $statusConfig,
             'hasData' => count($orderData) > 0,
             'hasItemsData' => count($orderItems) > 0,
             'controller' => $this,
-            'amt' => $amt
+            'amt' => $amt,
+            'pbData' => $pbData
         ];
-
 
         // Load view
         require_once 'views/kasir.php';
     }
 
+    // API endpoint untuk get detail
+    public function getDetail()
+    {
+        // Set header JSON di awal
+        header('Content-Type: application/json');
+
+        try {
+            // Validasi parameter
+            if (!isset($_GET['notrans']) || !isset($_GET['tgl'])) {
+                http_response_code(400);
+                echo json_encode([
+                    'success' => false,
+                    'message' => 'Parameter tidak lengkap (notrans dan tgl required)',
+                    'debug' => [
+                        'notrans' => $_GET['notrans'] ?? 'missing',
+                        'tgl' => $_GET['tgl'] ?? 'missing'
+                    ]
+                ]);
+                return;
+            }
+
+            $noTrans = $_GET['notrans'];
+            $tglTrans = $_GET['tgl'];
+
+            error_log("API getDetail called: notrans=$noTrans, tgl=$tglTrans");
+
+            // Ambil detail dari model
+            $details = $this->model->getDetailByNoTrans($noTrans, $tglTrans);
+
+            error_log("Detail result count: " . count($details));
+
+            // Return JSON response
+            echo json_encode([
+                'success' => true,
+                'data' => $details,
+                'count' => count($details),
+                'params' => [
+                    'notrans' => $noTrans,
+                    'tgl' => $tglTrans
+                ]
+            ]);
+        } catch (Exception $e) {
+            http_response_code(500);
+            error_log("Error in getDetail: " . $e->getMessage());
+            echo json_encode([
+                'success' => false,
+                'message' => 'Terjadi kesalahan: ' . $e->getMessage()
+            ]);
+        }
+    }
+
     // Helper functions untuk view
     public function formatNumber($number)
     {
-        return number_format($number);
+        return number_format((float)$number, 0, ',', '.');
     }
 
     public function formatDate($date, $format = 'd M Y')
     {
+        if (empty($date) || $date === 'now') {
+            return date($format);
+        }
         return date($format, strtotime($date));
     }
 

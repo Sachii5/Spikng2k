@@ -4,7 +4,7 @@
         <footer class="main-footer">
             <div class="container">
                 <div class="float-right d-none d-sm-inline">
-                    v1.1
+                    v1.3
                 </div>
                 <strong>Copyright &copy; 2025 <a href="https://www.instagram.com/spikuningan">SPI 2K Kuningan</a>.</strong> All rights reserved.
             </div>
