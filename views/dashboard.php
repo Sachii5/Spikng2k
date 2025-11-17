@@ -32,7 +32,7 @@ function getArrowIcon($change)
 
     /* Enhanced Header */
     .dashboard-header {
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        background: #0b6fc7;
         color: white;
         border-radius: 16px;
         padding: 30px;
@@ -76,6 +76,127 @@ function getArrowIcon($change)
         font-size: 1.1rem;
     }
 
+    /* Filter Section */
+    .filter-section {
+        background: white;
+        border-radius: 12px;
+        padding: 20px;
+        margin-bottom: 30px;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+    }
+
+    .filter-title {
+        font-size: 1.1rem;
+        font-weight: 700;
+        color: #2c3e50;
+        margin-bottom: 15px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+    .filter-form {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 15px;
+        align-items: end;
+    }
+
+    .filter-group {
+        flex: 1;
+        min-width: 200px;
+    }
+
+    .filter-label {
+        display: block;
+        font-size: 0.9rem;
+        font-weight: 600;
+        color: #495057;
+        margin-bottom: 5px;
+    }
+
+    .filter-input {
+        width: 100%;
+        padding: 10px 15px;
+        border: 2px solid #e9ecef;
+        border-radius: 8px;
+        font-size: 0.95rem;
+        transition: all 0.3s ease;
+    }
+
+    .filter-input:focus {
+        outline: none;
+        border-color: #667eea;
+        box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+    }
+
+    .filter-buttons {
+        display: flex;
+        gap: 10px;
+    }
+
+    .btn-filter {
+        padding: 10px 25px;
+        border: none;
+        border-radius: 8px;
+        font-size: 0.95rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+    .btn-primary {
+        background: #0b6fc7;
+        color: white;
+    }
+
+    .btn-primary:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+    }
+
+    .btn-secondary {
+        background: #6c757d;
+        color: white;
+    }
+
+    .btn-secondary:hover {
+        background: #5a6268;
+    }
+
+    /* Quick Filter Buttons */
+    .quick-filters {
+        display: flex;
+        gap: 10px;
+        margin-top: 15px;
+        flex-wrap: wrap;
+    }
+
+    .btn-quick {
+        padding: 8px 15px;
+        background: #f8f9fa;
+        border: 2px solid #dee2e6;
+        border-radius: 6px;
+        font-size: 0.85rem;
+        font-weight: 600;
+        color: #495057;
+        cursor: pointer;
+        transition: all 0.3s ease;
+    }
+
+    .btn-quick:hover {
+        background: #e9ecef;
+        border-color: #adb5bd;
+    }
+
+    .btn-quick.active {
+        background: #0b6fc7;
+        color: white;
+        border-color: #667eea;
+    }
 
     /* Enhanced Data Cards */
     .data-card {
@@ -157,7 +278,6 @@ function getArrowIcon($change)
         white-space: nowrap;
         overflow: hidden;
         text-overflow: ellipsis;
-        /* samakan tinggi angka antar kartu */
     }
 
     .card-comparison {
@@ -257,6 +377,23 @@ function getArrowIcon($change)
 
         .header-info {
             text-align: center;
+        }
+
+        .filter-form {
+            flex-direction: column;
+        }
+
+        .filter-group {
+            min-width: 100%;
+        }
+
+        .filter-buttons {
+            width: 100%;
+        }
+
+        .btn-filter {
+            flex: 1;
+            justify-content: center;
         }
 
         .data-card {
@@ -373,6 +510,55 @@ function getArrowIcon($change)
             </div>
         </div>
 
+        <!-- Filter Section -->
+        <div class="filter-section">
+            <div class="filter-title">
+                <i class="fas fa-filter"></i>
+                Filter Periode Data
+            </div>
+            <form method="GET" action="index.php" class="filter-form" id="filterForm">
+                <input type="hidden" name="page" value="dashboard">
+
+                <div class="filter-group">
+                    <label class="filter-label">
+                        <i class="fas fa-calendar"></i> Tanggal Mulai
+                    </label>
+                    <input type="date" name="start_date" class="filter-input"
+                        value="<?php echo $_GET['start_date'] ?? date('Y-m-01'); ?>"
+                        id="startDate">
+                </div>
+
+                <div class="filter-group">
+                    <label class="filter-label">
+                        <i class="fas fa-calendar"></i> Tanggal Akhir
+                    </label>
+                    <input type="date" name="end_date" class="filter-input"
+                        value="<?php echo $_GET['end_date'] ?? date('Y-m-d'); ?>"
+                        id="endDate">
+                </div>
+
+                <div class="filter-buttons">
+                    <button type="submit" class="btn-filter btn-primary">
+                        <i class="fas fa-search"></i>
+                        Tampilkan
+                    </button>
+                    <button type="button" class="btn-filter btn-secondary" onclick="resetFilter()">
+                        <i class="fas fa-redo"></i>
+                        Reset
+                    </button>
+                </div>
+            </form>
+
+            <!-- Quick Filter Buttons -->
+            <div class="quick-filters">
+                <button class="btn-quick" onclick="setQuickFilter('today')">Hari Ini</button>
+                <button class="btn-quick" onclick="setQuickFilter('yesterday')">Kemarin</button>
+                <button class="btn-quick" onclick="setQuickFilter('this_week')">Minggu Ini</button>
+                <button class="btn-quick" onclick="setQuickFilter('last_week')">Minggu Lalu</button>
+                <button class="btn-quick" onclick="setQuickFilter('this_month')">Bulan Ini</button>
+                <button class="btn-quick" onclick="setQuickFilter('last_month')">Bulan Lalu</button>
+            </div>
+        </div>
 
         <!-- Dashboard utama -->
         <div class="metrics-grid">
@@ -381,10 +567,10 @@ function getArrowIcon($change)
                 <div class="card data-card border-primary">
                     <div class="metric-body text-center">
                         <div>
-                            <div class="card-title mb-1">SALES HARI INI</div>
+                            <div class="card-title mb-1">SALES PERIODE INI</div>
                             <div class="card-value mb-2"><?php echo $data['metrics']['salesToday']; ?></div>
                             <div class="card-comparison mb-1">
-                                vs tgl ini bulan lalu: <?php echo $data['metrics']['salesYesterday']; ?>
+                                vs periode sebelumnya: <?php echo $data['metrics']['salesYesterday']; ?>
                             </div>
                         </div>
                         <div>
@@ -392,10 +578,10 @@ function getArrowIcon($change)
                                 class="card-change <?php echo $this->getChangeClass($data['metrics']['salesChange']); ?>">
                                 <i
                                     class="fas fa-arrow-<?php echo $this->getArrowIcon($data['metrics']['salesChange']); ?>"></i>
-                                <?php echo $this->formatPercentage($data['metrics']['salesChange']); ?>% dari kemarin
+                                <?php echo $this->formatPercentage($data['metrics']['salesChange']); ?>% perubahan
                             </div>
                             <div class="info-text mt-2">
-                                Update: <?php echo $this->formatDate($data['dates']['today']); ?>
+                                Periode: <?php echo isset($_GET['start_date']) ? $this->formatDate($_GET['start_date']) . ' - ' . $this->formatDate($_GET['end_date']) : $this->formatDate($data['dates']['today']); ?>
                             </div>
                         </div>
                     </div>
@@ -407,11 +593,11 @@ function getArrowIcon($change)
                 <div class="card data-card border-success">
                     <div class="metric-body text-center">
                         <div>
-                            <div class="card-title mb-1">PESANAN HARI INI</div>
+                            <div class="card-title mb-1">PESANAN PERIODE INI</div>
                             <div class="card-value mb-2">
                                 <?php echo $this->formatNumber($data['metrics']['ordersToday']); ?></div>
                             <div class="card-comparison mb-1">
-                                vs tgl ini bulan lalu: <?php echo $this->formatNumber($data['metrics']['ordersYesterday']); ?>
+                                vs periode sebelumnya: <?php echo $this->formatNumber($data['metrics']['ordersYesterday']); ?>
                             </div>
                         </div>
                         <div>
@@ -419,10 +605,10 @@ function getArrowIcon($change)
                                 class="card-change <?php echo $this->getChangeClass($data['metrics']['ordersChange']); ?>">
                                 <i
                                     class="fas fa-arrow-<?php echo $this->getArrowIcon($data['metrics']['ordersChange']); ?>"></i>
-                                <?php echo $this->formatPercentage($data['metrics']['ordersChange']); ?>% dari kemarin
+                                <?php echo $this->formatPercentage($data['metrics']['ordersChange']); ?>% perubahan
                             </div>
                             <div class="info-text mt-2">
-                                Update: <?php echo $this->formatDate($data['dates']['today']); ?>
+                                Periode: <?php echo isset($_GET['start_date']) ? $this->formatDate($_GET['start_date']) . ' - ' . $this->formatDate($_GET['end_date']) : $this->formatDate($data['dates']['today']); ?>
                             </div>
                         </div>
                     </div>
@@ -434,11 +620,11 @@ function getArrowIcon($change)
                 <div class="card data-card border-warning">
                     <div class="metric-body text-center">
                         <div>
-                            <div class="card-title mb-1">MEMBER BELANJA BULAN INI</div>
+                            <div class="card-title mb-1">MEMBER BELANJA PERIODE INI</div>
                             <div class="card-value mb-2">
                                 <?php echo $this->formatNumber($data['metrics']['memberAktif']); ?></div>
                             <div class="card-comparison mb-1">
-                                vs tgl ini bulan lalu: <?php echo $this->formatNumber($data['metrics']['memberAktifLast']); ?>
+                                vs periode sebelumnya: <?php echo $this->formatNumber($data['metrics']['memberAktifLast']); ?>
                             </div>
                         </div>
                         <div>
@@ -446,11 +632,10 @@ function getArrowIcon($change)
                                 class="card-change <?php echo $this->getChangeClass($data['metrics']['memberAktifChange']); ?>">
                                 <i
                                     class="fas fa-arrow-<?php echo $this->getArrowIcon($data['metrics']['memberAktifChange']); ?>"></i>
-                                <?php echo $this->formatPercentage($data['metrics']['memberAktifChange']); ?>% dari
-                                kemarin
+                                <?php echo $this->formatPercentage($data['metrics']['memberAktifChange']); ?>% perubahan
                             </div>
                             <div class="info-text mt-2">
-                                CUS_TGLMULAI ≤ <?php echo $this->formatDate($data['dates']['today']); ?>
+                                Member aktif dalam periode terpilih
                             </div>
                         </div>
                     </div>
@@ -462,10 +647,10 @@ function getArrowIcon($change)
                 <div class="card data-card border-danger">
                     <div class="metric-body text-center">
                         <div>
-                            <div class="card-title mb-1">MARGIN HARI INI</div>
+                            <div class="card-title mb-1">MARGIN PERIODE INI</div>
                             <div class="card-value mb-2"><?php echo $data['metrics']['marginToday']; ?></div>
                             <div class="card-comparison mb-1">
-                                vs tgl ini bulan lalu: <?php echo $data['metrics']['marginYesterday']; ?>
+                                vs periode sebelumnya: <?php echo $data['metrics']['marginYesterday']; ?>
                             </div>
                         </div>
                         <div>
@@ -473,38 +658,28 @@ function getArrowIcon($change)
                                 class="card-change <?php echo $this->getChangeClass($data['metrics']['marginChange']); ?>">
                                 <i
                                     class="fas fa-arrow-<?php echo $this->getArrowIcon($data['metrics']['marginChange']); ?>"></i>
-                                <?php echo $this->formatPercentage($data['metrics']['marginChange']); ?>% dari kemarin
+                                <?php echo $this->formatPercentage($data['metrics']['marginChange']); ?>% perubahan
                             </div>
                             <div class="info-text mt-2">
-                                Update: <?php echo $this->formatDate($data['dates']['today']); ?>
+                                Periode: <?php echo isset($_GET['start_date']) ? $this->formatDate($_GET['start_date']) . ' - ' . $this->formatDate($_GET['end_date']) : $this->formatDate($data['dates']['today']); ?>
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
+
             <!-- ONGKIR HARI INI -->
             <div class="metric-card" onclick="window.location.href='index.php?page=kasir'">
                 <div class="metric-card">
                     <div class="card data-card border-danger">
                         <div class="metric-body text-center">
                             <div>
-                                <div class="card-title mb-1">ONGKIR HARI INI</div>
+                                <div class="card-title mb-1">ONGKIR PERIODE INI</div>
                                 <div class="card-value mb-2"><?php echo $data['metrics']['ongkirToday']; ?></div>
                                 <div class="card-comparison mb-1">
                                     PB kena ongkir: <?php echo $data['metrics']['ongkirPBToday']; ?>
                                 </div>
                             </div>
-                            <!-- <div>
-                            <div
-                                class="card-change <?php echo $this->getChangeClass($data['metrics']['marginChange']); ?>">
-                                <i
-                                    class="fas fa-arrow-<?php echo $this->getArrowIcon($data['metrics']['marginChange']); ?>"></i>
-                                <?php echo $this->formatPercentage($data['metrics']['marginChange']); ?>% dari kemarin
-                            </div>
-                            <div class="info-text mt-2">
-                                Update: <?php echo $this->formatDate($data['dates']['today']); ?>
-                            </div>
-                        </div> -->
                         </div>
                     </div>
                 </div>
@@ -515,25 +690,23 @@ function getArrowIcon($change)
         <div class="row">
             <div class="col-md-12">
                 <div class="chart-container">
-                    <h5 class="mb-3 text-center">Perbandingan Pesanan Harian:
-                        <?php echo $data['dates']['currentMonth']; ?> vs <?php echo $data['dates']['lastMonth']; ?></h5>
+                    <h5 class="mb-3 text-center">Perbandingan Pesanan Harian: <?php echo $data['dates']['chartTitle']; ?></h5>
                     <div class="chart-wrapper">
                         <canvas id="ordersComparisonChart" height="300"></canvas>
                     </div>
                     <div class="chart-legend">
                         <div class="legend-item">
                             <div class="legend-color" style="background-color: rgba(54, 162, 235, 0.6);"></div>
-                            <span><?php echo $data['dates']['currentMonth']; ?></span>
+                            <span><?php echo $data['dates']['currentPeriod']; ?></span>
                         </div>
                         <div class="legend-item">
                             <div class="legend-color" style="background-color: rgba(255, 99, 132, 0.6);"></div>
-                            <span><?php echo $data['dates']['lastMonth']; ?></span>
+                            <span><?php echo $data['dates']['previousPeriod']; ?></span>
                         </div>
                     </div>
                     <div class="info-text mt-3 text-center">
                         *Data total pesanan harian (jumlah order per hari)<br>
-                        Grafik menunjukkan perbandingan volume pesanan per hari antara bulan berjalan dan bulan
-                        sebelumnya
+                        Grafik menunjukkan perbandingan volume pesanan per hari antara periode terpilih dan periode sebelumnya
                     </div>
                 </div>
             </div>
@@ -546,40 +719,32 @@ function getArrowIcon($change)
 <script>
     // Data dari PHP
     const chartLabels = <?php echo json_encode($data['chartData']['labels']); ?>;
-    const currentMonthValues = <?php echo json_encode($data['chartData']['currentMonthValues']); ?>;
-    const lastMonthValues = <?php echo json_encode($data['chartData']['lastMonthValues']); ?>;
+    const currentPeriodValues = <?php echo json_encode($data['chartData']['currentMonthValues']); ?>;
+    const previousPeriodValues = <?php echo json_encode($data['chartData']['lastMonthValues']); ?>;
 
     // Inisialisasi chart
     const ctx = document.getElementById('ordersComparisonChart').getContext('2d');
     const ordersComparisonChart = new Chart(ctx, {
-        type: 'line',
+        type: 'bar',
         data: {
             labels: chartLabels,
             datasets: [{
-                    label: '<?php echo $data['dates']['currentMonth']; ?>',
-                    data: currentMonthValues,
+                    label: '<?php echo $data['dates']['currentPeriod']; ?>',
+                    data: currentPeriodValues,
+                    backgroundColor: 'rgba(54, 162, 235, 0.8)',
                     borderColor: 'rgba(54, 162, 235, 1)',
-                    backgroundColor: 'rgba(54, 162, 235, 0.1)',
-                    tension: 0.4,
-                    fill: true,
-                    pointBackgroundColor: 'rgba(54, 162, 235, 1)',
-                    pointBorderColor: '#fff',
-                    pointBorderWidth: 2,
-                    pointRadius: 4,
-                    pointHoverRadius: 6
+                    borderWidth: 2,
+                    borderRadius: 6,
+                    hoverBackgroundColor: 'rgba(54, 162, 235, 1)'
                 },
                 {
-                    label: '<?php echo $data['dates']['lastMonth']; ?>',
-                    data: lastMonthValues,
+                    label: '<?php echo $data['dates']['previousPeriod']; ?>',
+                    data: previousPeriodValues,
+                    backgroundColor: 'rgba(255, 99, 132, 0.8)',
                     borderColor: 'rgba(255, 99, 132, 1)',
-                    backgroundColor: 'rgba(255, 99, 132, 0.1)',
-                    tension: 0.4,
-                    fill: true,
-                    pointBackgroundColor: 'rgba(255, 99, 132, 1)',
-                    pointBorderColor: '#fff',
-                    pointBorderWidth: 2,
-                    pointRadius: 4,
-                    pointHoverRadius: 6
+                    borderWidth: 2,
+                    borderRadius: 6,
+                    hoverBackgroundColor: 'rgba(255, 99, 132, 1)'
                 }
             ]
         },
@@ -612,7 +777,7 @@ function getArrowIcon($change)
                     },
                     title: {
                         display: true,
-                        text: 'Hari dalam Bulan'
+                        text: 'Tanggal'
                     }
                 },
                 y: {
@@ -638,4 +803,62 @@ function getArrowIcon($change)
             }
         }
     });
+
+    // Quick Filter Functions
+    function setQuickFilter(period) {
+        const today = new Date();
+        let startDate, endDate;
+
+        switch (period) {
+            case 'today':
+                startDate = endDate = formatDate(today);
+                break;
+            case 'yesterday':
+                const yesterday = new Date(today);
+                yesterday.setDate(yesterday.getDate() - 1);
+                startDate = endDate = formatDate(yesterday);
+                break;
+            case 'this_week':
+                const thisWeekStart = new Date(today);
+                thisWeekStart.setDate(today.getDate() - today.getDay());
+                startDate = formatDate(thisWeekStart);
+                endDate = formatDate(today);
+                break;
+            case 'last_week':
+                const lastWeekEnd = new Date(today);
+                lastWeekEnd.setDate(today.getDate() - today.getDay() - 1);
+                const lastWeekStart = new Date(lastWeekEnd);
+                lastWeekStart.setDate(lastWeekEnd.getDate() - 6);
+                startDate = formatDate(lastWeekStart);
+                endDate = formatDate(lastWeekEnd);
+                break;
+            case 'this_month':
+                startDate = formatDate(new Date(today.getFullYear(), today.getMonth(), 1));
+                endDate = formatDate(today);
+                break;
+            case 'last_month':
+                const lastMonthStart = new Date(today.getFullYear(), today.getMonth() - 1, 1);
+                const lastMonthEnd = new Date(today.getFullYear(), today.getMonth(), 0);
+                startDate = formatDate(lastMonthStart);
+                endDate = formatDate(lastMonthEnd);
+                break;
+        }
+
+        document.getElementById('startDate').value = startDate;
+        document.getElementById('endDate').value = endDate;
+        document.getElementById('filterForm').submit();
+    }
+
+    function formatDate(date) {
+        const year = date.getFullYear();
+        const month = String(date.getMonth() + 1).padStart(2, '0');
+        const day = String(date.getDate()).padStart(2, '0');
+        return `${year}-${month}-${day}`;
+    }
+
+    function resetFilter() {
+        document.getElementById('startDate').value = '<?php echo date('Y-m-01'); ?>';
+        document.getElementById('endDate').value = '<?php echo date('Y-m-d'); ?>';
+        document.getElementById('filterForm').submit();
+    }
 </script>
