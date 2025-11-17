@@ -250,7 +250,7 @@ error_log('VIEW: PB count = ' . count($pbData));
     }
 
     .btn-detail {
-        background: linear-gradient(135deg, #9b59b6, #8e44ad);
+        background: #0b6fc7;
         border: none;
         border-radius: 8px;
         padding: 6px 16px;

@@ -61,7 +61,7 @@ $controller = $data['controller'];
     }
 
     .table-modern th {
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        background: #0b6fc7;
         color: white;
         font-weight: 600;
         border: none;
@@ -87,7 +87,7 @@ $controller = $data['controller'];
     }
 
     .btn-modern {
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        background: #0b6fc7;
         border: none;
         border-radius: 8px;
         padding: 10px 20px;
@@ -271,7 +271,7 @@ $controller = $data['controller'];
     }
 
     .page-item.active .page-link {
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        background: #0b6fc7;
         border-color: #667eea;
         color: white;
     }

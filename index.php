@@ -1,6 +1,6 @@
 <?php
-require_once "component/header.php";
-require_once "component/nav.php";
+require_once "includes/header.php";
+require_once "includes/nav.php";
 
 // Routing sederhana
 $page = $_GET['page'] ?? 'dashboard';
@@ -42,4 +42,4 @@ switch ($page) {
         break;
 }
 
-require_once "component/footer.php";
+require_once "includes/footer.php";
