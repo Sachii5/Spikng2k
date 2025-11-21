@@ -1,4 +1,288 @@
-<?php $controller = $data['controller']; ?>
+<?php
+$controller = $data['controller'];
+?>
+
+<style>
+    .customer-container {
+        background-color: #f8f9fa;
+        min-height: 100vh;
+        padding: 20px 0;
+    }
+
+    .summary-card {
+        background: white;
+        border-radius: 12px;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+        padding: 25px;
+        margin-bottom: 25px;
+        border: none;
+        transition: all 0.3s ease;
+    }
+
+    .summary-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+    }
+
+    .summary-value {
+        font-size: 2.5rem;
+        font-weight: 800;
+        color: #2c3e50;
+        margin-bottom: 5px;
+    }
+
+    .summary-label {
+        font-size: 0.9rem;
+        color: #6c757d;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+
+    .data-card {
+        background: white;
+        border-radius: 12px;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+        padding: 25px;
+        margin-bottom: 25px;
+        border: none;
+        transition: all 0.3s ease;
+    }
+
+    .data-card:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 6px 20px rgba(0, 0, 0, 0.12);
+    }
+
+    .table-modern {
+        border-radius: 10px;
+        overflow: hidden;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
+    }
+
+    .table-modern th {
+        background: #0b6fc7;
+        color: white;
+        font-weight: 600;
+        border: none;
+        padding: 15px;
+    }
+
+    .table-modern td {
+        padding: 12px 15px;
+        vertical-align: middle;
+        border-bottom: 1px solid #e9ecef;
+    }
+
+    .table-modern tbody tr:hover {
+        background-color: #f8f9fa;
+    }
+
+    .filter-section {
+        background: white;
+        border-radius: 12px;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+        padding: 25px;
+        margin-bottom: 25px;
+    }
+
+    .btn-modern {
+        background: #0b6fc7;
+        border: none;
+        border-radius: 8px;
+        padding: 10px 20px;
+        font-weight: 600;
+        color: white;
+        transition: all 0.3s ease;
+    }
+
+    .btn-modern:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+        color: white;
+    }
+
+    .btn-reset {
+        background: #6c757d;
+        border: none;
+        border-radius: 8px;
+        padding: 10px 20px;
+        font-weight: 600;
+        color: white;
+        transition: all 0.3s ease;
+    }
+
+    .btn-reset:hover {
+        background: #5a6268;
+        transform: translateY(-2px);
+        color: white;
+    }
+
+    .breadcrumb-modern {
+        background: white;
+        border-radius: 8px;
+        padding: 15px 20px;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
+        margin-bottom: 25px;
+    }
+
+    .member-card {
+        transition: all 0.3s ease;
+        border: 2px solid transparent;
+        margin-bottom: 15px;
+    }
+
+    .member-card:hover {
+        border-color: #667eea;
+        transform: translateY(-2px);
+        box-shadow: 0 4px 15px rgba(102, 126, 234, 0.2);
+    }
+
+    .scrollable-section {
+        max-height: 700px;
+        overflow-y: auto;
+        padding-right: 10px;
+    }
+
+    .scrollable-section::-webkit-scrollbar {
+        width: 8px;
+    }
+
+    .scrollable-section::-webkit-scrollbar-track {
+        background: #f1f1f1;
+        border-radius: 10px;
+    }
+
+    .scrollable-section::-webkit-scrollbar-thumb {
+        background: #c1c1c1;
+        border-radius: 10px;
+    }
+
+    .scrollable-section::-webkit-scrollbar-thumb:hover {
+        background: #a8a8a8;
+    }
+
+    .load-more-btn {
+        width: 100%;
+        margin-top: 15px;
+        padding: 10px;
+        background: #f8f9fa;
+        border: 1px solid #dee2e6;
+        border-radius: 6px;
+        color: #495057;
+        font-weight: 500;
+        transition: all 0.3s ease;
+    }
+
+    .load-more-btn:hover {
+        background: #e9ecef;
+        border-color: #adb5bd;
+    }
+
+    .data-info {
+        font-size: 0.85rem;
+        color: #6c757d;
+        text-align: center;
+        margin-top: 10px;
+        padding: 10px;
+        background: #f8f9fa;
+        border-radius: 6px;
+    }
+
+    /* Salesman Box Styles */
+    .salesman-box-container {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+        gap: 15px;
+        margin-bottom: 25px;
+    }
+
+    .salesman-box {
+        background: white;
+        border-radius: 12px;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+        padding: 20px;
+        text-align: center;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        border: 3px solid transparent;
+    }
+
+    .salesman-box:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+    }
+
+    .salesman-box.active {
+        border-color: #667eea;
+        background: linear-gradient(135deg, #f8f9ff 0%, #f0f2ff 100%);
+    }
+
+    .salesman-name {
+        font-weight: 600;
+        color: #2c3e50;
+        margin-bottom: 5px;
+        font-size: 1rem;
+    }
+
+    .salesman-count {
+        font-size: 0.85rem;
+        color: #6c757d;
+    }
+
+    /* Pagination Styles */
+    .pagination-container {
+        display: flex;
+        justify-content: center;
+        margin-top: 30px;
+    }
+
+    .pagination {
+        display: flex;
+        list-style: none;
+        padding: 0;
+        margin: 0;
+        gap: 5px;
+    }
+
+    .page-item {
+        margin: 0;
+    }
+
+    .page-link {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        min-width: 40px;
+        height: 40px;
+        padding: 0 15px;
+        border: 1px solid #dee2e6;
+        background: white;
+        color: #667eea;
+        text-decoration: none;
+        border-radius: 8px;
+        font-weight: 600;
+        transition: all 0.3s ease;
+    }
+
+    .page-link:hover {
+        background: #f8f9fa;
+        border-color: #667eea;
+    }
+
+    .page-item.active .page-link {
+        background: #0b6fc7;
+        border-color: #667eea;
+        color: white;
+    }
+
+    .page-item.disabled .page-link {
+        color: #6c757d;
+        background: #f8f9fa;
+        border-color: #dee2e6;
+        cursor: not-allowed;
+    }
+</style>
 
 <div class="container-fluid customer-container">
     <div class="container">
@@ -30,25 +314,25 @@
         <!-- Summary Stats -->
         <div class="row mb-4">
             <div class="col-md-3">
-                <div class="summary-card">
+                <div class="summary-card text-center">
                     <div class="summary-value"><?php echo $controller->formatNumber($data['summaryData']['total_member'] ?? 0); ?></div>
                     <div class="summary-label">Total Member</div>
                 </div>
             </div>
             <div class="col-md-3">
-                <div class="summary-card">
+                <div class="summary-card text-center">
                     <div class="summary-value"><?php echo $controller->formatNumber($data['summaryData']['total_salesman'] ?? 0); ?></div>
                     <div class="summary-label">Total MR</div>
                 </div>
             </div>
             <div class="col-md-3">
-                <div class="summary-card">
+                <div class="summary-card text-center">
                     <div class="summary-value"><?php echo $controller->formatNumber($data['summaryData']['member_baru_bulan_ini'] ?? 0); ?></div>
                     <div class="summary-label">Member Baru Bulan Ini</div>
                 </div>
             </div>
             <div class="col-md-3">
-                <div class="summary-card">
+                <div class="summary-card text-center">
                     <div class="summary-value"><?php echo $controller->formatNumber($data['summaryData']['member_aktif_transaksi'] ?? 0); ?></div>
                     <div class="summary-label">Member Aktif Transaksi</div>
                 </div>
