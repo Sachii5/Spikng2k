@@ -576,6 +576,7 @@ error_log('VIEW: PB count = ' . count($pbData));
                             <thead>
                                 <tr>
                                     <th style="width: 50px;">#</th>
+                                    <th>Status Pesanan</th>
                                     <th>Nomor Transaksi</th>
                                     <th>No PB</th>
                                     <th>Kode Member</th>
@@ -587,6 +588,7 @@ error_log('VIEW: PB count = ' . count($pbData));
                                 <?php foreach ($amt as $idx => $amtRow): ?>
                                     <tr>
                                         <td><?php echo $idx + 1; ?></td>
+                                        <td><?php echo htmlspecialchars($amtRow['status_pesanan'] ?? '-'); ?></td>
                                         <td><?php echo htmlspecialchars($amtRow['nomor'] ?? '-'); ?></td>
                                         <td><?php echo htmlspecialchars($amtRow['notrx'] ?? '-'); ?></td>
                                         <td><?php echo htmlspecialchars($amtRow['kdmember'] ?? '-'); ?></td>
@@ -626,6 +628,7 @@ error_log('VIEW: PB count = ' . count($pbData));
                             <thead>
                                 <tr>
                                     <th style="width: 50px;">#</th>
+                                    <th>Status Pesanan</th>
                                     <th>No Transaksi</th>
                                     <th>No PB</th>
                                     <th>Tanggal</th>
@@ -638,6 +641,7 @@ error_log('VIEW: PB count = ' . count($pbData));
                                 <?php foreach ($pbData as $idx => $pb): ?>
                                     <tr>
                                         <td><?php echo $idx + 1; ?></td>
+                                        <td><?php echo htmlspecialchars($pb['status_pesanan'] ?? '-'); ?></td>
                                         <td><?php echo htmlspecialchars($pb['notrans'] ?? '-'); ?></td>
                                         <td><?php echo htmlspecialchars($pb['nopb'] ?? '-'); ?></td>
                                         <td><?php echo $controller->formatDate($pb['tgl'] ?? 'now', 'd M Y H:i'); ?></td>
@@ -700,6 +704,7 @@ error_log('VIEW: PB count = ' . count($pbData));
                         <div class="col-md-6">
                             <div class="info-card">
                                 <h6><i class="fas fa-file-alt me-2"></i>Informasi Transaksi</h6>
+                                <p class="mb-2"><strong>Status Transaksi:</strong> <span id="detailStatusTransaksi">-</span></p>
                                 <p class="mb-2"><strong>No Transaksi:</strong> <span id="detailNoTrans">-</span></p>
                                 <p class="mb-2"><strong>No PB:</strong> <span id="detailNoPB">-</span></p>
                                 <p class="mb-0"><strong>Tanggal:</strong> <span id="detailTgl">-</span></p>
@@ -797,6 +802,7 @@ error_log('VIEW: PB count = ' . count($pbData));
                     const firstItem = data.data[0];
 
                     // Fill header info
+                    document.getElementById('detailStatusTransaksi').textContent = firstItem.status_pesanan || '-';
                     document.getElementById('detailNoTrans').textContent = firstItem.nomor || '-';
                     document.getElementById('detailNoPB').textContent = firstItem.nopb || '-';
                     document.getElementById('detailTgl').textContent = firstItem.tgl ? formatDate(firstItem.tgl) : '-';

@@ -91,6 +91,17 @@ class KasirModel
         $query = "
         SELECT
             h.obi_notrans as nomor,
+            CASE
+                WHEN h.obi_recid = '6' THEN 'SELESAI'
+                WHEN h.obi_recid = '1' THEN 'SIAP PICKING'
+                WHEN h.obi_recid = '2' THEN 'SIAP SCANNING'
+                WHEN h.obi_recid = '3' THEN 'SIAP DRAFT STRUK'
+                WHEN h.obi_recid = '4' THEN 'PEMBAYARAN'
+                WHEN h.obi_recid = '5' THEN 'SIAP STRUK'
+                WHEN h.obi_recid LIKE 'B%' THEN 'BATAL'
+                WHEN h.obi_recid IS NULL THEN 'SIAP SEND HANDHELD'
+                ELSE 'LAINNYA'
+            END AS status_pesanan,
             h.obi_nopb as notrx,
             h.obi_kdmember as kdmember,
             c.cus_namamember as namamember,
@@ -119,7 +130,18 @@ class KasirModel
     {
         $query = "
         SELECT 
-            obi_nopb as nopb, 
+            obi_nopb as nopb,
+            CASE
+                WHEN obi_recid = '6' THEN 'SELESAI'
+                WHEN obi_recid = '1' THEN 'SIAP PICKING'
+                WHEN obi_recid = '2' THEN 'SIAP SCANNING'
+                WHEN obi_recid = '3' THEN 'SIAP DRAFT STRUK'
+                WHEN obi_recid = '4' THEN 'PEMBAYARAN'
+                WHEN obi_recid = '5' THEN 'SIAP STRUK'
+                WHEN obi_recid LIKE 'B%' THEN 'BATAL'
+                WHEN obi_recid IS NULL THEN 'SIAP SEND HANDHELD'
+                ELSE 'LAINNYA'
+            END AS status_pesanan,
             obi_tglpb as tgl, 
             obi_notrans as notrans,
             obi_kdmember as kode_member,
@@ -144,6 +166,17 @@ class KasirModel
         $query = "
         SELECT 
             d.obi_notrans as nomor,
+            CASE
+                WHEN h.obi_recid = '6' THEN 'SELESAI'
+                WHEN h.obi_recid = '1' THEN 'SIAP PICKING'
+                WHEN h.obi_recid = '2' THEN 'SIAP SCANNING'
+                WHEN h.obi_recid = '3' THEN 'SIAP DRAFT STRUK'
+                WHEN h.obi_recid = '4' THEN 'PEMBAYARAN'
+                WHEN h.obi_recid = '5' THEN 'SIAP STRUK'
+                WHEN h.obi_recid LIKE 'B%' THEN 'BATAL'
+                WHEN h.obi_recid IS NULL THEN 'SIAP SEND HANDHELD'
+                ELSE 'LAINNYA'
+            END AS status_pesanan,
             h.obi_nopb as nopb,
             h.obi_tglpb as tgl,
             h.obi_kdmember as kode_member,
