@@ -636,10 +636,6 @@ function getArrowIcon($change)
                         <i class="fas fa-calendar-alt"></i>
                         <?php echo $this->formatDate($data['dates']['today']); ?>
                     </span>
-                    <span class="update-time">
-                        <i class="fas fa-clock"></i>
-                        Update Terakhir: <?php echo date('H:i'); ?>
-                    </span>
                 </div>
             </div>
         </div>
@@ -676,7 +672,7 @@ function getArrowIcon($change)
                         <i class="fas fa-search"></i>
                         Tampilkan
                     </button>
-                    <button type="button" class="btn-filter btn-secondary" onclick="resetFilter()">
+                    <button type="button" class="btn-filter btn-secondary" onclick="window.location='index.php?page=dashboard'">
                         <i class="fas fa-redo"></i>
                         Reset
                     </button>
@@ -689,7 +685,7 @@ function getArrowIcon($change)
                 <button class="btn-quick" onclick="setQuickFilter('yesterday')">Kemarin</button>
                 <button class="btn-quick" onclick="setQuickFilter('this_week')">Minggu Ini</button>
                 <button class="btn-quick" onclick="setQuickFilter('last_week')">Minggu Lalu</button>
-                <button class="btn-quick" onclick="setQuickFilter('this_month')">Bulan Ini</button>
+                <button class="btn-quick" onclick="window.location='index.php?page=dashboard'">Bulan Ini</button>
                 <button class="btn-quick" onclick="setQuickFilter('last_month')">Bulan Lalu</button>
             </div>
         </div>
@@ -798,7 +794,16 @@ function getArrowIcon($change)
                             <div class="card-title mb-1">ONGKIR PERIODE INI</div>
                             <div class="card-value mb-2"><?php echo $data['metrics']['ongkirToday']; ?></div>
                             <div class="card-comparison mb-1">
-                                PB kena ongkir: <?php echo $data['metrics']['ongkirPBToday']; ?>
+                                vs periode sebelumnya: <?php echo $data['metrics']['ongkirYesterday']; ?>
+                            </div>
+                        </div>
+                        <div>
+                            <div class="card-change <?php echo $this->getChangeClass($data['metrics']['ongkirChange']); ?>">
+                                <i class="fas fa-arrow-<?php echo $this->getArrowIcon($data['metrics']['ongkirChange']); ?>"></i>
+                                <?php echo $this->formatPercentage($data['metrics']['ongkirChange']); ?>% perubahan
+                            </div>
+                            <div class="info-text mt-2">
+                                PB kena ongkir: <?php echo $data['metrics']['ongkirPBToday']; ?> (sebelumnya: <?php echo $data['metrics']['ongkirPBYesterday']; ?>)
                             </div>
                         </div>
                     </div>
@@ -1203,8 +1208,8 @@ function getArrowIcon($change)
     }
 
     function resetFilter() {
-        document.getElementById('startDate').value = '<?php echo date('Y-m-01'); ?>';
-        document.getElementById('endDate').value = '<?php echo date('Y-m-d'); ?>';
+        document.getElementById('startDate').value = '<?php echo date(''); ?>';
+        document.getElementById('endDate').value = '<?php echo date(''); ?>';
         document.getElementById('filterForm').submit();
     }
 

@@ -271,11 +271,40 @@ class DashboardModel
     public function getOngkirForPeriod($startDate, $endDate)
     {
         $query = "
-        SELECT 
-            SUM(pot_ongkir) as pot_ongkir, 
-            COUNT(CASE WHEN ongkir <> 0 THEN 1 END) as pb_ongkir 
-        FROM payment_klikigr 
-        WHERE tgl_trans::date BETWEEN '$startDate'::date AND '$endDate'::date
+        WITH ranked AS (
+    SELECT
+        pot_ongkir,
+        ongkir,
+        sti_penerima,
+        sti_tglserahterima,
+        sti_vehicleno,
+        sti_driverid,
+        sti_driverphone,
+        ROW_NUMBER() OVER (
+            PARTITION BY
+                sti_penerima,
+                sti_tglserahterima,
+                sti_vehicleno,
+                sti_driverid,
+                sti_driverphone
+            ORDER BY
+                awi_cost DESC
+        ) AS rn
+    FROM tbtr_awb_ipp
+    LEFT JOIN tbtr_serahterima_ipp
+        ON awi_noawb = sti_noawb
+    LEFT JOIN payment_klikigr
+        ON awi_nopb = no_pb
+    LEFT JOIN tbtr_obi_h
+        ON awi_nopb = obi_nopb
+    WHERE tgl_trans::date BETWEEN '$startDate'::date AND '$endDate'::date
+        AND obi_recid = '6'
+)
+SELECT
+    SUM(pot_ongkir) AS pot_ongkir,
+    COUNT(CASE WHEN ongkir <> 0 THEN 1 END) as pb_ongkir 
+FROM ranked
+WHERE rn = 1
         ";
 
         $result = $this->db->query($query);

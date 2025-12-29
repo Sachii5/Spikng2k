@@ -187,6 +187,12 @@ class DashboardController
         $memberAktifLast = $this->getMembersForPeriod($this->dates['previousStart'], $this->dates['previousEnd']);
         $marginYesterday = $this->getMarginForPeriod($this->dates['previousStart'], $this->dates['previousEnd']);
 
+        // Ambil data ongkir untuk periode pembanding
+        $ongkirYesterdayData = $this->getOngkirForPeriod($this->dates['previousStart'], $this->dates['previousEnd']);
+
+        // Hitung perubahan ongkir
+        $ongkirChange = $this->calculatePercentageChange($ongkirData['pot_ongkir'], $ongkirYesterdayData['pot_ongkir']);
+
         // Hitung perubahan
         $salesChange = $this->calculatePercentageChange($salesToday, $salesYesterday);
         $ordersChange = $this->calculatePercentageChange($ordersToday, $ordersYesterday);
@@ -225,7 +231,10 @@ class DashboardController
                 'marginYesterday' => $this->formatCurrency($marginYesterday),
                 'marginChange' => $marginChange,
                 'ongkirToday' => $this->formatCurrency($ongkirData['pot_ongkir']),
-                'ongkirPBToday' => $this->formatNumber($ongkirData['pb_ongkir'])
+                'ongkirYesterday' => $this->formatCurrency($ongkirYesterdayData['pot_ongkir']), // tambahkan ini
+                'ongkirPBToday' => $this->formatNumber($ongkirData['pb_ongkir']),
+                'ongkirPBYesterday' => $this->formatNumber($ongkirYesterdayData['pb_ongkir']), // tambahkan ini
+                'ongkirChange' => $ongkirChange, // tambahkan ini
             ],
             'chartData' => $chartData
         ];
