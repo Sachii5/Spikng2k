@@ -809,6 +809,30 @@ function getArrowIcon($change)
                     </div>
                 </div>
             </div>
+
+            <!-- TOTAL MEMBER -->
+            <div class="metric-card">
+                <div class="card data-card border-primary">
+                    <div class="metric-body text-center">
+                        <div>
+                            <div class="card-title mb-1">TOTAL MEMBER</div>
+                            <div class="card-value mb-2"><?php echo $data['metrics']['totalMemberToday']; ?></div>
+                            <div class="card-comparison mb-1">
+                                vs periode sebelumnya: <?php echo $data['metrics']['totalMemberYesterday']; ?>
+                            </div>
+                        </div>
+                        <div>
+                            <div class="card-change <?php echo $this->getChangeClass($data['metrics']['totalMemberChange']); ?>">
+                                <i class="fas fa-arrow-<?php echo $this->getArrowIcon($data['metrics']['totalMemberChange']); ?>"></i>
+                                <?php echo $this->formatPercentage($data['metrics']['totalMemberChange']); ?>% perubahan
+                            </div>
+                            <div class="info-text mt-2">
+                                Total Member Terdaftar
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
 
         <!-- Chart -->

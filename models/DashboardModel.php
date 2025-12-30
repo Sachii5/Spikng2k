@@ -344,4 +344,24 @@ WHERE rn = 1
     {
         return $this->getNewRegistrationsCurrentMonth($startDate, $endDate);
     }
+
+    /**
+     * Mengambil total member terdaftar sampai dengan tanggal tertentu
+     */
+    public function getTotalMembersAsOf($date)
+    {
+        $query = "
+        SELECT count(distinct(CUS_KODEMEMBER)) AS jml_mem
+        FROM TBMASTER_CUSTOMER
+        WHERE CUS_RECORDID IS NULL
+        AND CUS_KODEIGR = '2K'
+        AND CUS_NAMAKTP <> 'NEW'
+        AND CUS_TGLREGISTRASI::DATE <= '$date'::date
+        ";
+
+        $result = $this->db->query($query);
+        $data = $this->db->fetch($result);
+        $this->db->freeResult($result);
+        return $data['jml_mem'] ?? 0;
+    }
 }

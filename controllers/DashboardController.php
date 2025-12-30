@@ -193,6 +193,11 @@ class DashboardController
         // Hitung perubahan ongkir
         $ongkirChange = $this->calculatePercentageChange($ongkirData['pot_ongkir'], $ongkirYesterdayData['pot_ongkir']);
 
+        // Data Total Member (Cumulative)
+        $totalMemberToday = $this->dashboardModel->getTotalMembersAsOf($this->dates['currentEnd']);
+        $totalMemberYesterday = $this->dashboardModel->getTotalMembersAsOf($this->dates['previousEnd']);
+        $totalMemberChange = $this->calculatePercentageChange($totalMemberToday, $totalMemberYesterday);
+
         // Hitung perubahan
         $salesChange = $this->calculatePercentageChange($salesToday, $salesYesterday);
         $ordersChange = $this->calculatePercentageChange($ordersToday, $ordersYesterday);
@@ -235,6 +240,9 @@ class DashboardController
                 'ongkirPBToday' => $this->formatNumber($ongkirData['pb_ongkir']),
                 'ongkirPBYesterday' => $this->formatNumber($ongkirYesterdayData['pb_ongkir']), // tambahkan ini
                 'ongkirChange' => $ongkirChange, // tambahkan ini
+                'totalMemberToday' => $this->formatNumber($totalMemberToday),
+                'totalMemberYesterday' => $this->formatNumber($totalMemberYesterday),
+                'totalMemberChange' => $totalMemberChange,
             ],
             'chartData' => $chartData
         ];
